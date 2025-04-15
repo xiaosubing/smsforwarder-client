@@ -23,10 +23,11 @@ type Data struct {
 func processMessage(text, sender string) {
 	code := service.MessageCodeProcess(text)
 	conf.Message <- fmt.Sprintf("%s---%s---%s", text, sender, code)
+	conf.ForwarderMessage <- fmt.Sprintf("%s---%s---%s", text, sender, code)
 	fmt.Println("获取到的消息：", text)
 
 	models.SaveMessage(text, sender, code)
-	fmt.Println("消息发送完成")
+
 }
 
 func SendMessage(c *gin.Context) {

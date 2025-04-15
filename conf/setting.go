@@ -9,9 +9,11 @@ import (
 
 var Smsforwarder *smsforwarderSetting
 var Message = make(chan string, 5)
+var ForwarderMessage = make(chan string, 5)
 
 type smsforwarderSetting struct {
 	BaseInfo         *baseinfo
+	Forwarder        *forwarder
 	MessageTemplate  string
 	GetMessageVerify string
 	GetEncryptPhone  string
@@ -21,6 +23,11 @@ type smsforwarderSetting struct {
 type baseinfo struct {
 	PhoneNumber string
 	PhoneAlias  string
+}
+
+type forwarder struct {
+	ForwarderOn  bool
+	ForwarderUrl string
 }
 
 type saveMessage struct {
@@ -82,6 +89,10 @@ func NewSmsforwarder() *smsforwarderSetting {
 			PhoneNumber: viper.GetString("baseInfo.phoneNumber"),
 			PhoneAlias:  viper.GetString("baseInfo.phoneAlias"),
 		},
+		Forwarder: &forwarder{
+			ForwarderOn:  viper.GetBool("forwarder.on"),
+			ForwarderUrl: viper.GetString("forwarder.url"),
+		},
 		MessageTemplate:  viper.GetString("template"),
 		GetMessageVerify: viper.GetString("getMessage.verify"),
 
@@ -126,8 +137,14 @@ func createConf() {
 
 # 基础信息
 baseInfo:
-  phoneNumber: 手机号，必须填写！
-  phoneAlias: 手机号别名，请填写！
+  phoneNumber: 112
+  phoneAlias: 手机号别名
+
+# 转发
+forwarder:
+  on: true
+  url: "http://192.168.86.176:801/api/forwarder"
+
 
 # 1 需要验证码  顺序不能乱！
 template: "验证码: [验证码]\n收信人: [收信人]\n发信人: [发信人]\n短信原文:\n[短信原文]"
@@ -173,6 +190,7 @@ notify:
   codeSec:
     on: false
     type: mail
+
 
   webhook:
     url: "https://send-notifyme.521933.xyz"
@@ -223,8 +241,6 @@ notify:
     # 默认使用qq邮箱发送, 可自行替换其他邮箱
     smtpHost: "smtp.qq.com"
     smtpPort: 587
-
-
 
 `
 	write := bufio.NewWriter(file)

@@ -8,6 +8,7 @@ import (
 	models "smsforwarder/modules"
 	"smsforwarder/notify"
 	"smsforwarder/router"
+	"smsforwarder/service"
 )
 
 func main() {
@@ -17,13 +18,10 @@ func main() {
 	go models.NewDB()
 	go message.ListenMessage()
 	go notify.Notify()
+	go service.Forwarder()
 
 	r := router.App()
 
-	//for i := 0; i < 10; i++ {
-	//	time.Sleep(time.Second * 1)
-	//	models.SaveMessage("测试", "10010", "123456")
-	//}
 	fmt.Println("开始监听短信......")
 
 	r.Run(":5000")
