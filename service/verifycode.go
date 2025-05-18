@@ -11,8 +11,12 @@ import (
 // 991378(登录随机码) ，感谢您使用中国联通APP【中国联通】               来源： wap.10010.com
 // 【芒果tv】338673（随机验证码），有效期10分钟。如非本人使用，敬请忽略本信息。
 // 【沃畅玩】请勿将验证码告知任何人，您的验证码为：316235，有效时间5分钟。
+// 【5G宽视界】尊敬的 11111982021 用户, 您的短信验证码是 052819，请尽快使用，勿要告知他人
 func MessageCodeProcess(content string) string {
-	re := regexp.MustCompile(`.*?(.{0,15})[随机|验证|登录|授权|动态|校验]码(.{0,10})`)
+	re := regexp.MustCompile(`\b\d{11}\b`)
+	content = re.ReplaceAllString(content, "")
+
+	re = regexp.MustCompile(`.*?(.{0,15})[随机|验证|登录|授权|动态|校验]码(.{0,10})`)
 	match := re.FindAllString(content, -1)
 	if len(match) == 0 {
 		return "None"
